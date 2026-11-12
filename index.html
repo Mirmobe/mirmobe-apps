@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mirmobe Apps · Pay 0.05 SOL or buy on Shopify</title>
+<meta name="description" content="Seven Mirmobe apps built on Grok. Pay 0.05 SOL on-chain or check out on Shopify. Your call, ser.">
+<meta name="theme-color" content="#07080c">
+<meta property="og:title" content="Mirmobe Apps">
+<meta property="og:description" content="Seven apps. One price: 0.05 SOL, verified on-chain. Or pay in USD on Shopify.">
+<meta property="og:image" content="https://glass-ceiling-star-map.grok.me/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Outfit:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><span data-spiral></span><b>Mirmobe</b></a>
+    <span class="chip">◎ 0.05 SOL each</span>
+  </header>
+  <section class="hero">
+    <span class="spiral" data-spiral style="display:inline-block"></span>
+    <h1>Mirmobe Apps</h1>
+    <p class="lede">Seven apps forged with Grok. <em>One price: 0.05 SOL</em>, settled on-chain and verified in your browser. Rather swipe a card? Every app is on Shopify too. Pick your rail, ser.</p>
+  </section>
+  <section class="panel" style="max-width:720px;margin:10px auto 0">
+    <h2>How the SOL rail works</h2>
+    <ol class="steps">
+      <li>Tap <b>Pay 0.05 SOL</b> on any app. Scan the QR or tap Phantom, Solflare, or Jupiter.</li>
+      <li>Send exactly 0.05 SOL (plus network fee) to the Mirmobe wallet.</li>
+      <li>Paste your transaction signature. We read the chain, not your word. Access granted.</li>
+    </ol>
+  </section>
+  <div class="grid" id="grid"></div>
+  <footer>
+    <p>Prices in SOL are fixed at 0.05 SOL; the Shopify USD price tracks roughly the same value. These are apps, not investments. No yield, no promises, just good software. DYOR.</p>
+    <p><a href="https://mirmobe.wordpress.com/apps-shop/">Apps Shop on WordPress</a> · <a href="https://x.com/mirmobe">X</a> · <a href="https://t.me/mirmobe">Telegram</a> · <a href="https://github.com/mirmobe">GitHub</a></p>
+  </footer>
+</div>
+<script src="apps.js"></script>
+<script src="common.js"></script>
+<script>
+(function(){
+  var M=window.MIRMOBE, g=document.getElementById('grid');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  g.innerHTML=M.apps.map(function(a){
+    var shop=a.shopify?'<a class="btn" href="'+esc(a.shopify)+'" target="_blank" rel="noopener">Buy on Shopify</a>':'<span class="btn" aria-disabled="true" style="opacity:.5">Shopify soon</span>';
+    return '<article class="card" id="'+a.slug+'"><img loading="lazy" src="'+esc(a.img)+'" alt="'+esc(a.name)+'">'+
+      '<div class="body"><span class="chip" style="align-self:flex-start">'+esc(a.tag)+'</span><h2>'+esc(a.name)+'</h2><p>'+esc(a.pitch)+'</p>'+
+      '<div class="actions"><a class="btn primary" href="pay.html?app='+a.slug+'">Pay 0.05 SOL</a>'+shop+'</div></div></article>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

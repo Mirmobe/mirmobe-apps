@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pay 0.05 SOL · Mirmobe Apps</title>
+<meta name="description" content="Pay 0.05 SOL on-chain for a Mirmobe app. Scan, tap, verify, done.">
+<meta name="theme-color" content="#07080c">
+<meta property="og:title" content="Pay 0.05 SOL · Mirmobe Apps">
+<meta property="og:image" content="https://glass-ceiling-star-map.grok.me/og.jpg">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Outfit:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./"><span data-spiral></span><b>Mirmobe</b></a>
+    <a class="chip" href="./" style="text-decoration:none">← All apps</a>
+  </header>
+  <main class="pay">
+    <img class="appimg" id="appImg" alt="">
+    <div>
+      <span class="chip" id="appTag"></span>
+      <h1 id="appName" style="font-size:clamp(28px,7vw,40px);letter-spacing:.02em">Mirmobe App</h1>
+      <p class="note" id="appPitch" style="font-size:15px"></p>
+    </div>
+
+    <section class="panel granted" id="granted">
+      <h2>Access granted ✦</h2>
+      <p class="note">Payment verified on-chain. Welcome in, ser. Bookmark the link below.</p>
+      <a class="btn primary wide" id="launchBtn" href="#" target="_blank" rel="noopener">Launch the app</a>
+    </section>
+
+    <section class="panel" id="paySection">
+      <div class="price"><span class="note">One-time unlock</span><span class="amt">0.05 SOL</span></div>
+      <p class="note" style="margin:4px 0 0">Scan with any Solana wallet camera. Amount and memo are prefilled; you just confirm.</p>
+      <div class="qrbox" id="qr" role="img" aria-label="Solana Pay QR code"></div>
+      <p class="note" style="text-align:center;margin:8px 0 14px">Solana Pay QR · 0.05 SOL to Mirmobe</p>
+      <div class="wallets">
+        <a class="btn primary" id="connectedPay" href="#" style="display:none">Pay 0.05 SOL with this wallet</a>
+        <a class="btn" id="phantomBtn" href="#">Open in Phantom</a>
+        <a class="btn" id="solflareBtn" href="#">Open in Solflare</a>
+        <a class="btn" id="solanaPayBtn" href="#">Jupiter / any wallet (Solana Pay link)</a>
+      </div>
+      <p class="note" style="margin:10px 0 6px">Phantom and Solflare open this page in their in-app browser, then tap “Pay 0.05 SOL with this wallet.” Jupiter Mobile has no documented browse deep link, so use the Solana Pay link or scan the QR with Jupiter’s Magic Scan.</p>
+      <label for="addr">Or send manually to</label>
+      <div class="addr"><code id="addr"></code><button class="btn" id="copyBtn" type="button">Copy</button></div>
+    </section>
+
+    <section class="panel">
+      <h2>Already paid?</h2>
+      <label for="sig">Paste your transaction signature or a Solscan link</label>
+      <input type="text" id="sig" autocomplete="off" spellcheck="false" placeholder="5h3x…  or  https://solscan.io/tx/…">
+      <div style="height:10px"></div>
+      <button class="btn primary wide" id="verifyBtn" type="button">Verify on-chain</button>
+      <p class="status" id="status" aria-live="polite"></p>
+      <p class="note" style="margin:0">We check: tx succeeded, ≥ 0.05 SOL landed in the Mirmobe wallet, and it’s under 7 days old. Read straight from Solana mainnet, no middleman.</p>
+    </section>
+
+    <p class="disclaimer">Buying an app, not a token. No yield, no financial promises. Payments are final; network fees are on you. Prefer USD? <a id="shopLink" href="./">Buy on Shopify</a>.</p>
+  </main>
+</div>
+<script src="apps.js"></script>
+<script src="common.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script>
+(function(){
+  var M = window.MIRMOBE;
+  var slug = new URLSearchParams(location.search).get('app') || '';
+  var app = M.apps.filter(function(a){return a.slug===slug;})[0];
+  if(!app){ location.replace('./'); return; }
+
+  // ===== settings (reused from the Meme Crucible paywall) =====
+  var PRICE_SOL = M.priceSol, PAYMENT_ADDRESS = M.payTo;
+  var RPC_URLS = ['https://solana-rpc.publicnode.com','https://api.mainnet-beta.solana.com'];
+  var PAYMENT_MAX_AGE_MS = 7*24*60*60*1000, LAMPORTS_PER_SOL = 1e9;
+  var MIN_LAMPORTS = Math.round(PRICE_SOL*LAMPORTS_PER_SOL);
+  var LS_UNLOCK = 'mirmobe_apps_unlocked_'+app.slug, LS_USED = 'mirmobe_apps_used_sigs';
+  var SOLANA_PAY_URL = 'solana:'+PAYMENT_ADDRESS+'?amount='+PRICE_SOL+'&label='+encodeURIComponent(M.label)+'&message='+encodeURIComponent(app.name);
+
+  document.title = 'Pay 0.05 SOL · '+app.name;
+  var $ = function(id){return document.getElementById(id);};
+  $('appImg').src = app.img; $('appImg').alt = app.name;
+  $('appName').textContent = app.name; $('appPitch').textContent = app.pitch; $('appTag').textContent = app.tag;
+  $('addr').textContent = PAYMENT_ADDRESS; $('launchBtn').href = app.url;
+  if(app.shopify) $('shopLink').href = app.shopify;
+
+  // QR (bundled qrcode-generator, no third-party API)
+  var q = qrcode(0,'M'); q.addData(SOLANA_PAY_URL); q.make();
+  $('qr').innerHTML = q.createSvgTag({cellSize:6, margin:2, scalable:true});
+
+  // Wallet deep links
+  var here = location.href.split('#')[0], ref = encodeURIComponent(location.origin);
+  $('phantomBtn').href  = 'https://phantom.app/ul/browse/'+encodeURIComponent(here)+'?ref='+ref;
+  $('solflareBtn').href = 'https://solflare.com/ul/v1/browse/'+encodeURIComponent(here)+'?ref='+ref;
+  $('solanaPayBtn').href = SOLANA_PAY_URL;
+
+  $('copyBtn').addEventListener('click', function(){
+    var b=this; navigator.clipboard.writeText(PAYMENT_ADDRESS).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy';},1600);},
+      function(){setStatus('Copy failed. Long-press the address to copy it.','err');});
+  });
+
+  function setStatus(msg,kind){var s=$('status');s.textContent=msg||'';s.className='status'+(kind?' '+kind:'');}
+  function grant(){ $('granted').classList.add('show'); $('granted').scrollIntoView({behavior:'smooth',block:'center'}); }
+  if(localStorage.getItem(LS_UNLOCK)==='1') grant();
+
+  function usedSigs(){try{var p=JSON.parse(localStorage.getItem(LS_USED)||'[]');return Array.isArray(p)?p:[];}catch(e){return [];}}
+  function extractSignature(raw){
+    var t=(raw||'').trim(); if(!t) return '';
+    var m=t.match(/(?:solscan\.io|solana\.fm|explorer\.solana\.com|orb\.helius\.dev)\/(?:tx|transaction)\/([1-9A-HJ-NP-Za-km-z]+)/i); if(m) return m[1];
+    var s=t.match(/[1-9A-HJ-NP-Za-km-z]{80,90}/); return s?s[0]:'';
+  }
+  function collectAccountKeys(tx){
+    var keys=[], ak=(tx.transaction&&tx.transaction.message&&tx.transaction.message.accountKeys)||[];
+    ak.forEach(function(k){keys.push(typeof k==='string'?k:k.pubkey);});
+    var l=tx.meta&&tx.meta.loadedAddresses; if(l){(l.writable||[]).forEach(function(k){keys.push(k);});(l.readonly||[]).forEach(function(k){keys.push(k);});}
+    return keys;
+  }
+  function recipientGainLamports(tx,address){
+    var keys=collectAccountKeys(tx), i=keys.indexOf(address); if(i===-1) return 0;
+    var pre=(tx.meta.preBalances||[])[i], post=(tx.meta.postBalances||[])[i];
+    if(!isFinite(pre)||!isFinite(post)) return 0; return post-pre;
+  }
+  async function rpc(method,params){
+    var lastErr;
+    for(var i=0;i<RPC_URLS.length;i++){
+      try{
+        var r=await fetch(RPC_URLS[i],{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:method,params:params})});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        var b=await r.json(); if(b.error) throw new Error(b.error.message||'RPC error');
+        return b.result;
+      }catch(e){lastErr=e;}
+    }
+    throw new Error('The Solana network could not be reached ('+(lastErr&&lastErr.message)+'). Try again in a moment.');
+  }
+  async function verifyPaymentSignature(signature){
+    if(usedSigs().indexOf(signature)!==-1 && localStorage.getItem(LS_UNLOCK)!=='1') throw new Error('This signature was already used for a different app in this browser.');
+    var tx=await rpc('getTransaction',[signature,{encoding:'jsonParsed',maxSupportedTransactionVersion:0,commitment:'confirmed'}]);
+    if(!tx) throw new Error('Transaction not found yet. Give it a few seconds, then try again.');
+    if(tx.meta==null||tx.meta.err) throw new Error('That transaction did not succeed on-chain.');
+    var age=Date.now()-((tx.blockTime||0)*1000);
+    if(!tx.blockTime||age>PAYMENT_MAX_AGE_MS||age<-60000) throw new Error('That payment is older than 7 days, or has no timestamp.');
+    if(recipientGainLamports(tx,PAYMENT_ADDRESS)<MIN_LAMPORTS) throw new Error('That transaction did not send at least '+PRICE_SOL+' SOL to the Mirmobe wallet.');
+    var u=usedSigs(); if(u.indexOf(signature)===-1){u.push(signature);localStorage.setItem(LS_USED,JSON.stringify(u));}
+    localStorage.setItem(LS_UNLOCK,'1');
+  }
+  async function runVerify(sig){
+    var b=$('verifyBtn'); b.disabled=true; setStatus('Reading the chain…','pending');
+    try{ await verifyPaymentSignature(sig); setStatus('Verified. 0.05 SOL received. WAGMI.','ok'); grant(); }
+    catch(e){ setStatus(e&&e.message?e.message:'Could not verify that payment.','err'); throw e; }
+    finally{ b.disabled=false; }
+  }
+  $('verifyBtn').addEventListener('click',function(){
+    var sig=extractSignature($('sig').value);
+    if(!sig){setStatus('Paste a valid Solana transaction signature first.','err');return;}
+    runVerify(sig).catch(function(){});
+  });
+
+  // In-wallet browser: pay directly with the injected provider
+  function provider(){
+    if(window.phantom&&window.phantom.solana&&window.phantom.solana.isPhantom) return window.phantom.solana;
+    if(window.solflare&&window.solflare.isSolflare) return window.solflare;
+    if(window.jupiter&&window.jupiter.solana) return window.jupiter.solana;
+    if(window.solana) return window.solana;
+    return null;
+  }
+  function setupInjected(){
+    var p=provider(); if(!p) return;
+    var btn=$('connectedPay'); btn.style.display='';
+    btn.addEventListener('click',function(ev){ev.preventDefault();payWithProvider(p);});
+  }
+  function b58(bytes){var A='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',d=[0],i,j,c,out='';bytes=Array.from(bytes);for(i=0;i<bytes.length;i++){c=bytes[i];for(j=0;j<d.length;j++){c+=d[j]<<8;d[j]=c%58;c=(c/58)|0;}while(c){d.push(c%58);c=(c/58)|0;}}for(i=0;i<bytes.length&&bytes[i]===0;i++)out+='1';for(i=d.length-1;i>=0;i--)out+=A[d[i]];return out;}
+  function loadWeb3(){return new Promise(function(res,rej){if(window.solanaWeb3)return res(window.solanaWeb3);var s=document.createElement('script');s.src='vendor/solana-web3.iife.min.js';s.onload=function(){res(window.solanaWeb3);};s.onerror=rej;document.head.appendChild(s);});}
+  async function payWithProvider(p){
+    try{
+      setStatus('Connecting wallet…','pending');
+      var W=await loadWeb3();
+      var resp=await p.connect(); var from=(resp&&resp.publicKey)||p.publicKey;
+      from=new W.PublicKey(from.toString());
+      var bh=await rpc('getLatestBlockhash',[{commitment:'confirmed'}]);
+      var tx=new W.Transaction({feePayer:from,recentBlockhash:bh.value.blockhash});
+      tx.add(W.SystemProgram.transfer({fromPubkey:from,toPubkey:new W.PublicKey(PAYMENT_ADDRESS),lamports:MIN_LAMPORTS}));
+      setStatus('Confirm 0.05 SOL in your wallet…','pending');
+      var out=await p.signAndSendTransaction(tx);
+      var sig=(out&&out.signature)||out; if(typeof sig!=='string') sig=b58(sig);
+      $('sig').value=sig;
+      setStatus('Sent. Waiting for confirmation…','pending');
+      for(var i=0;i<20;i++){ await new Promise(function(r){setTimeout(r,2500);}); try{ await runVerify(sig); return; }catch(e){ if(!/not found/i.test(e.message)) return; } }
+    }catch(e){ setStatus((e&&e.message)||'Wallet payment was cancelled.','err'); }
+  }
+  if(document.readyState==='complete') setupInjected(); else addEventListener('load',function(){setTimeout(setupInjected,300);});
+})();
+</script>
+</body>
+</html>
