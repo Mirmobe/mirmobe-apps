@@ -71,7 +71,24 @@
   var M = window.MIRMOBE;
   var slug = new URLSearchParams(location.search).get('app') || '';
   var app = M.apps.filter(function(a){return a.slug===slug;})[0];
-  if(!app){ location.replace('./'); return; }
+  if(!app){
+    document.title = 'Not available \u00b7 Mirmobe Apps';
+    var unavailableName = slug === 'punch-out' ? 'This app is not available' : 'App not found';
+    var unavailablePitch = slug === 'punch-out'
+      ? 'This app is temporarily off the shop while it is being reworked. The rest of the catalog is still up.'
+      : 'That app is not in the shop. Head back to the catalog to see what is available.';
+    document.getElementById('appName').textContent = unavailableName;
+    document.getElementById('appPitch').textContent = unavailablePitch;
+    document.getElementById('appTag').textContent = 'Unavailable';
+    var pay = document.getElementById('paySection'); if(pay) pay.style.display = 'none';
+    var granted = document.getElementById('granted'); if(granted) granted.style.display = 'none';
+    // Hide the verify/already-paid panel: it is the second .panel after #paySection.
+    var panels = document.querySelectorAll('main.pay > section.panel');
+    for(var i=0;i<panels.length;i++){ if(panels[i].id !== 'granted' && panels[i].id !== 'paySection'){ panels[i].style.display = 'none'; } }
+    var disc = document.querySelector('main.pay > p.disclaimer');
+    if(disc) disc.innerHTML = 'This listing is not for sale right now. <a href="./">See the available apps</a>.';
+    return;
+  }
 
   // ===== settings (reused from the Meme Crucible paywall) =====
   var PRICE_SOL = M.priceSol, PAYMENT_ADDRESS = M.payTo;
