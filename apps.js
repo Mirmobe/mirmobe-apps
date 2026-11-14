@@ -5,11 +5,6 @@ window.MIRMOBE = {
   label: 'Mirmobe Apps',
   shopBase: 'https://mirmobe-apps.myshopify.com',
   apps: [
-    { slug: 'meme-crucible', name: "Mirmobe's Magic Meme Crucible",
-      pitch: 'Pull a meme coin from the stone. A cartoon Sword-in-the-Stone forge for names, tickers, and lore.',
-      url: 'https://mirmobe.github.io/mirmobe-meme-crucible/',
-      img: 'https://mirmobe.wordpress.com/wp-content/uploads/2026/11/questo-logo-1024.png',
-      tag: 'Meme forge', shopify: 'https://mirmobe-apps.myshopify.com/products/mirmobes-magic-meme-crucible' },
     { slug: 'sky', name: 'Mirmobe Sky',
       pitch: 'Point a phone at the night. Stars, planets, constellations, comets, and the ISS, live overhead.',
       url: 'https://glass-ceiling-star-map.grok.me/',
