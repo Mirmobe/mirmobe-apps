@@ -1,0 +1,9 @@
+# Seeker signing key. Losing it blocks dApp Store updates, and it does not belong in git.
+*.keystore
+*.jks
+
+# Android / webshell build output
+seeker/**/local.properties
+seeker/**/.gradle/
+seeker/**/build/
+seeker/**/.cxx/

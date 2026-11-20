@@ -9,8 +9,8 @@ window.MIRMOBE = {
   apps: [
     { slug: 'sky', name: 'Mirmobe Sky',
       pitch: 'Point a phone at the night. Stars, planets, constellations, comets, and the ISS, live overhead.',
-      url: 'https://glass-ceiling-star-map.grok.me/',
-      img: 'https://glass-ceiling-star-map.grok.me/og.jpg',
+      url: 'https://mirmobe.github.io/mirmobe-apps/sky/',
+      img: 'sky/og.jpg',
       tag: 'Night sky', shopify: 'https://mirmobe-apps.myshopify.com/products/mirmobe-sky' },
     { slug: 'ashbound', name: 'Ashbound',
       pitch: 'A hell-run action game. Fast, brutal, and very much not a soft landing.',

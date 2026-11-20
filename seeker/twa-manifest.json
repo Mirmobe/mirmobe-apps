@@ -1,0 +1,13 @@
+{
+  "fallbackType": "webview",
+  "generatorApp": "solana-mobile",
+  "host": "mirmobe.github.io",
+  "launcherName": "Mirmobe Sky",
+  "name": "Mirmobe Sky",
+  "packageId": "com.mirmobe.sky",
+  "startUrl": "/mirmobe-apps/sky/",
+  "signingKey": {
+    "alias": "mirmobe-sky",
+    "path": "release.keystore"
+  }
+}
