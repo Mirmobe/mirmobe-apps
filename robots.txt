@@ -1,0 +1,5 @@
+# Published at https://mirmobe.github.io/mirmobe-apps/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://mirmobe.github.io/mirmobe-apps/sitemap.xml
