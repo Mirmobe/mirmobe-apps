@@ -1,4 +1,6 @@
 // Mirmobe Apps catalog. Edit prices/links here.
+// index.html repeats these cards for crawlers that do not run JavaScript.
+// Change a link or description in both places, and update sitemap.xml.
 window.MIRMOBE = {
   payTo: '5P1ArCLapXPjSEaNauVYAmtLKxEwoELcttQvPqmF1VYP',
   priceSol: 0.05,
