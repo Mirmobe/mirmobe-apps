@@ -1,0 +1,42 @@
+Solana dApp Store listing for Mirmobe Sky
+Package name (must match the APK, and cannot change later): com.mirmobe.sky
+
+App name: Mirmobe Sky
+
+Short description (50 characters max):
+Point your phone at the night sky.
+
+Long description:
+Mirmobe Sky is a night-sky viewer for a phone. Hold it up and the glass follows the compass, or drag the sky with a finger. Stars, planets, constellations, comets, and the International Space Station are drawn on the device.
+
+Location is optional. Allow it and the glass is set to your sky. Decline it and pick a city. The tip jar on the glass charges nothing; the count stays on the phone.
+
+This Android app is a window onto the Mirmobe Sky website. It is software for looking at the sky. It is not an investment, and it does not move money.
+
+What's new:
+First release. Point a Seeker at the night and see what is overhead.
+
+App website:
+https://mirmobe.github.io/mirmobe-apps/sky/
+
+Publisher website:
+https://mirmobe.github.io/mirmobe-apps/
+
+Privacy policy:
+https://mirmobe.github.io/mirmobe-apps/sky/privacy.html
+
+Terms:
+https://mirmobe.github.io/mirmobe-apps/sky/terms.html
+
+Support and contact email:
+Use an address you can read. Public contact points already on the site are https://github.com/mirmobe/mirmobe-apps and https://x.com/mirmobe.
+
+Listing images in listing/:
+- icon-512.png is 512×512 with a solid background
+- banner-1200x600.jpg is 1200×600
+- screenshot-1-glass.jpg through screenshot-4-tip.jpg are 1080×1920
+
+Before the first upload:
+1. Create a publisher profile at https://publish.solanamobile.com and finish identity verification.
+2. Connect a publisher wallet you will keep. It signs every later release.
+3. Create release.keystore (see README.md), build the signed APK, and upload that APK. Do not lose the keystore.
