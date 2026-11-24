@@ -41,11 +41,10 @@
         "image": "https://mirmobe.github.io/mirmobe-apps/sky/og.jpg",
         "offers": {
           "@type": "Offer",
-          "price": "0.99",
+          "price": "0",
           "priceCurrency": "USD",
-          "priceValidUntil": "2026-12-31",
           "availability": "https://schema.org/InStock",
-          "url": "https://mirmobe-apps.myshopify.com/products/mirmobe-sky"
+          "url": "https://mirmobe.github.io/mirmobe-apps/sky/"
         }
       }
     },
@@ -166,11 +165,12 @@
       <img loading="lazy" src="sky/og.jpg" alt="Mirmobe Sky">
       <div class="body">
         <span class="chip" style="align-self:flex-start">Night sky</span>
+        <span class="chip" style="align-self:flex-start">Free</span>
         <h2>Mirmobe Sky</h2>
         <p>Point a phone at the night. Stars, planets, constellations, comets, and the ISS, live overhead.</p>
         <div class="actions">
-          <a class="btn primary" href="pay.html?app=sky">Pay 0.05 SOL</a>
-          <a class="btn" href="https://mirmobe-apps.myshopify.com/products/mirmobe-sky" target="_blank" rel="noopener">Buy on Shopify</a>
+          <a class="btn primary" href="/mirmobe-apps/sky/">Open free</a>
+          <a class="btn" href="https://mirmobe-apps.myshopify.com/products/mirmobe-sky" target="_blank" rel="noopener">Free on Shopify</a>
         </div>
       </div>
     </article>
@@ -187,10 +187,10 @@
       </div>
     </article>
     <article class="card" id="aether-strike">
-      <img loading="lazy" src="https://aetheraimin.grok.me/og.jpg" alt="Aether &amp; Strike">
+      <img loading="lazy" src="https://aetheraimin.grok.me/og.jpg" alt="Aether & Strike">
       <div class="body">
         <span class="chip" style="align-self:flex-start">Music</span>
-        <h2>Aether &amp; Strike</h2>
+        <h2>Aether & Strike</h2>
         <p>Musical instruments that live in your browser. Tap, strum, and jam, zero installs.</p>
         <div class="actions">
           <a class="btn primary" href="pay.html?app=aether-strike">Pay 0.05 SOL</a>
@@ -234,12 +234,14 @@
 (function(){
   var M=window.MIRMOBE, g=document.getElementById('grid');
   if(!M||!g||g.querySelector('article.card')) return;
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&','<':'<','>':'>','"':'"'}[c];});}
   g.innerHTML=M.apps.map(function(a){
-    var shop=a.shopify?'<a class="btn" href="'+esc(a.shopify)+'" target="_blank" rel="noopener">Buy on Shopify</a>':'<span class="btn" aria-disabled="true" style="opacity:.5">Shopify soon</span>';
+    var shop=a.shopify?'<a class="btn" href="'+esc(a.shopify)+'" target="_blank" rel="noopener">'+(a.slug==='sky'?'Free on Shopify':'Buy on Shopify')+'</a>':'<span class="btn" aria-disabled="true" style="opacity:.5">Shopify soon</span>';
+    var primary=a.slug==='sky'?'<a class="btn primary" href="/mirmobe-apps/sky/">Open free</a>':'<a class="btn primary" href="pay.html?app='+a.slug+'">Pay 0.05 SOL</a>';
+    var chip=esc(a.tag)+(a.slug==='sky'?'</span><span class="chip" style="align-self:flex-start">Free':'');
     return '<article class="card" id="'+a.slug+'"><img loading="lazy" src="'+esc(a.img)+'" alt="'+esc(a.name)+'">'+
-      '<div class="body"><span class="chip" style="align-self:flex-start">'+esc(a.tag)+'</span><h2>'+esc(a.name)+'</h2><p>'+esc(a.pitch)+'</p>'+
-      '<div class="actions"><a class="btn primary" href="pay.html?app='+a.slug+'">Pay 0.05 SOL</a>'+shop+'</div></div></article>';
+      '<div class="body"><span class="chip" style="align-self:flex-start">'+chip+'</span><h2>'+esc(a.name)+'</h2><p>'+esc(a.pitch)+'</p>'+
+      '<div class="actions">'+primary+shop+'</div></div></article>';
   }).join('');
 })();
 </script>
